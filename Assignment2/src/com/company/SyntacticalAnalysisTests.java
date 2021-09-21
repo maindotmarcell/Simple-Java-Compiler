@@ -1,8 +1,10 @@
+package com.company;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 // This is a copy of the tests that your program is marked against
+
 // for the functionality component of the mark.
 public class SyntacticalAnalysisTests {
 
@@ -16,31 +18,31 @@ public class SyntacticalAnalysisTests {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser.analyse("public class { }")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimpleBadProgram2() throws LexicalException, SyntaxException {
 		assertThrows(SyntaxException.class,
 				() -> SyntacticAnalyser.parse(LexicalAnalyser.analyse("public class Test { }")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimpleBadProgram3() throws LexicalException, SyntaxException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser
 				.parse(LexicalAnalyser.analyse("public Test { public static void main(String[] args) {}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimpleBadProgram4() throws LexicalException, SyntaxException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser
 				.parse(LexicalAnalyser.analyse("public class Test { public void main(String[] args) {}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimpleBadProgram5() throws LexicalException, SyntaxException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser
 				.parse(LexicalAnalyser.analyse("public class { public static void main(String args) {} }")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimplestWorkingProgram() throws LexicalException, SyntaxException {
 		ParseTree result = SyntacticAnalyser
 				.parse(LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ }}"));
@@ -83,7 +85,7 @@ public class SyntacticalAnalysisTests {
 		assertEquals(children.get(i++).getToken().get().getType(), Token.TokenType.RBRACE);
 	}
 
-	@Test
+	@org.junit.Test
 	public void testProgramWithSimplestStatement() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser
 				.parse(LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ ; }}"));
@@ -102,7 +104,7 @@ public class SyntacticalAnalysisTests {
 
 	}
 
-	@Test
+	@org.junit.Test
 	public void testProgramWithSimpleDeclaration() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(
 				LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ int i; }}"));
@@ -146,13 +148,13 @@ public class SyntacticalAnalysisTests {
 
 	}
 
-	@Test
+	@org.junit.Test
 	public void testMissingSemicolon() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(
 				LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ int i }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSimpleWeirdAssignment() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(
 				LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ int i = 'c'; }}"));
@@ -217,7 +219,7 @@ public class SyntacticalAnalysisTests {
 		assertEquals(children.get(13).getChildren().get(1).getChildren().get(0).getLabel(), TreeNode.Label.epsilon);
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBooleanLitAssignment() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ boolean b = true; }}"));
@@ -276,7 +278,7 @@ public class SyntacticalAnalysisTests {
 		assertEquals(children.get(13).getChildren().get(1).getChildren().get(0).getLabel(), TreeNode.Label.epsilon);
 	}
 
-	@Test
+	@org.junit.Test
 	public void testAssignWithArithmetic() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ int i = 3 + 2 * 5; }}"));
@@ -299,37 +301,37 @@ public class SyntacticalAnalysisTests {
 				.getChildren().get(1).getChildren().get(1).getChildren().get(0).getToken().get().getValue().get());
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBadArithmetic1() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ int i = 3 + 2 * * 5; }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBadArithmetic2() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ int i = 3 2; }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBadArithmetic3() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ int i =  + / %; }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBadID() throws SyntaxException, LexicalException {
 		assertThrows(LexicalException.class, () -> SyntacticAnalyser.parse(
 				LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ int _453; }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testSyntacticallyBadID() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(
 				LexicalAnalyser.analyse("public class Test { public static void main(String[] args){ int 453; }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testIfStatement() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser.analyse(
 				"public class Test { public static void main(String[] args){ if (true) {System.out.println(\"true\");} else { System.out.println(\"false\"); }}}"));
@@ -354,31 +356,31 @@ public class SyntacticalAnalysisTests {
 		assertEquals(TreeNode.Label.epsilon, elseNode.getChildren().get(4).getChildren().get(0).getLabel());
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenIf1() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ if () {;} else { ; }}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenIf2() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ if () {;}  { ; }}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenIf3() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ if  {;} else { ; }}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenIf4() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ if ()  else { ; }}}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testNotBrokenIf() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ if (5) {;} else { ; }}}"));
@@ -388,7 +390,7 @@ public class SyntacticalAnalysisTests {
 				.getChildren().get(0).getToken().get().getValue().get());
 	}
 
-	@Test
+	@org.junit.Test
 	public void testWhile() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ while (true) { ; } }}"));
@@ -404,25 +406,25 @@ public class SyntacticalAnalysisTests {
 		assertEquals(Token.TokenType.RBRACE, whileNode.getChildren().get(7).getToken().get().getType());
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenWhile1() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ while () { ; } }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenWhile2() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ while a || b { ; } }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenWhile3() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ while (true) }}")));
 	}
 
-	@Test
+	@org.junit.Test
 	public void testFor() throws SyntaxException, LexicalException {
 		ParseTree result = SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ for ( ; 5 ;) {; } }}"));
@@ -444,7 +446,7 @@ public class SyntacticalAnalysisTests {
 		assertEquals(Token.TokenType.RBRACE, forNode.getChildren().get(11).getToken().get().getType());
 	}
 
-	@Test
+	@org.junit.Test
 	public void testBrokenFor() throws SyntaxException, LexicalException {
 		assertThrows(SyntaxException.class, () -> SyntacticAnalyser.parse(LexicalAnalyser
 				.analyse("public class Test { public static void main(String[] args){ for ( ;  ;) {; } }}")));

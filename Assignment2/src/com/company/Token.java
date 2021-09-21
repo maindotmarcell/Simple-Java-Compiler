@@ -1,3 +1,4 @@
+package com.company;
 import java.util.Optional;
 
 public class Token {

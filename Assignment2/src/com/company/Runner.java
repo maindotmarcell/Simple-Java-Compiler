@@ -1,3 +1,8 @@
+package com.company;
+import com.company.LexicalAnalyser;
+import com.company.LexicalException;
+import com.company.ParseTree;
+
 import java.util.List;
 
 public class Runner {

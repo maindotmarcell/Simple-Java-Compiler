@@ -1,3 +1,6 @@
+package com.company;
+
+
 public class ParseTree {
 
 	private TreeNode root;
