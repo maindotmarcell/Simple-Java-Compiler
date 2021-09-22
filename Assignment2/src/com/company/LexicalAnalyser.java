@@ -4,14 +4,51 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.Arrays;
 
 public class LexicalAnalyser {
 
 	public static List<Token> analyse(String sourceCode) throws LexicalException {
 		// Turn the input String into a list of Tokens!
 		String[] splitList = sourceCode.split(" ");
+		List<String> furtherSplitList = new ArrayList<String>();
 		List<Token> tokenList = new ArrayList<Token>();
-		List<Token> furtherSplitList = new ArrayList<Token>(); // TODO 
+
+		for (String word : splitList) {
+			String s = "";
+			for (int i = 0; i < word.length(); i++) {
+            	// System.out.println(word.charAt(i));
+				String c = Character.toString(word.charAt(i));
+				switch (c) {
+					case "(":
+					case ")":
+					case "{":
+					case "}":
+					case ";":
+						// System.out.println(s);
+						// System.out.println(c);
+						// if (s != null || s.length() > 0 || s != "") {
+						// 	System.out.println(s);
+						// 	furtherSplitList.add(s);
+						// }
+						furtherSplitList.add(s);
+						furtherSplitList.add(c);
+						s = "";
+						break;
+					default:
+						s += c;
+				}
+				// if token exists, add s to split list, then add token
+				// clear string var
+        	}
+			// if (s != null || s.length() > 0 || s != "") {
+			// 	System.out.println(s);
+			// 	furtherSplitList.add(s);
+			// }
+			furtherSplitList.add(s);
+		}
+		System.out.println(furtherSplitList);
+
 		for (String s : splitList) {
 			try {
 				tokenList.add(LexicalAnalyser.tokenFromString(s).get());
@@ -94,9 +131,9 @@ public class LexicalAnalyser {
 		case "false":
 			return Optional.of(Token.TokenType.FALSE);
 		}
-		System.out.println(t);
+		// System.out.println(t);
 		if (t.matches("\\d+")) {
-			System.out.print(t);
+			// System.out.print(t);
 			return Optional.of(Token.TokenType.NUM);
 		}
 		if (Character.isAlphabetic(t.charAt(0)) && t.matches("[\\d|\\w]+")) {
