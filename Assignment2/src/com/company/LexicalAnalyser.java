@@ -11,7 +11,7 @@ public class LexicalAnalyser {
 		// Turn the input String into a list of Tokens!
 		String[] splitList = sourceCode.split(" ");
 		List<Token> tokenList = new ArrayList<Token>();
-		
+		List<Token> furtherSplitList = new ArrayList<Token>(); // TODO 
 		for (String s : splitList) {
 			try {
 				tokenList.add(LexicalAnalyser.tokenFromString(s).get());
@@ -94,9 +94,11 @@ public class LexicalAnalyser {
 		case "false":
 			return Optional.of(Token.TokenType.FALSE);
 		}
-
-		if (t.matches("\\d+"))
+		System.out.println(t);
+		if (t.matches("\\d+")) {
+			System.out.print(t);
 			return Optional.of(Token.TokenType.NUM);
+		}
 		if (Character.isAlphabetic(t.charAt(0)) && t.matches("[\\d|\\w]+")) {
 			return Optional.of(Token.TokenType.ID);
 		}
