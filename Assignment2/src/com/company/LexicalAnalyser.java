@@ -3,12 +3,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 public class LexicalAnalyser {
 
 	public static List<Token> analyse(String sourceCode) throws LexicalException {
-		//Turn the input String into a list of Tokens!
-		return Collections.emptyList();
+		// Turn the input String into a list of Tokens!
+		String[] splitList = sourceCode.split(" ");
+		List<Token> tokenList = new ArrayList<Token>();
+		
+		for (String s : splitList) {
+			try {
+				tokenList.add(LexicalAnalyser.tokenFromString(s).get());
+			}
+			catch (NoSuchElementException e) {
+				// tokenList.add(Optional.empty());
+			}
+		}
+		return tokenList;
+		// return Collections.emptyList();
 	}
 
 	private static Optional<Token> tokenFromString(String t) {
