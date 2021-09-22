@@ -49,7 +49,8 @@ public class LexicalAnalyser {
 		}
 		System.out.println(furtherSplitList);
 
-		for (String s : splitList) {
+// 		for (String s : splitList) { <-- Uncomment to Review what Tokens look like
+		for (String s : furtherSplitList) {
 			try {
 				tokenList.add(LexicalAnalyser.tokenFromString(s).get());
 			}
