@@ -7,22 +7,73 @@ import java.util.ArrayList;
 
 public class LexicalAnalyser {
 
-    public static List<Token> analyse(String sourceCode) throws LexicalException {
-        //Turn the input String into a list of Tokens!
-		ArrayList<Token> ARList = new ArrayList<Token>();
-		String[] inputString = sourceCode.split(" ");
+	public static List<Token> analyse(String sourceCode) throws LexicalException {
+		// Turn the input String into a list of Tokens!
+		String[] splitList = sourceCode.split("\\s+");
+		List<String> furtherSplitList = new ArrayList<String>();
+		List<Token> tokenList = new ArrayList<Token>();
 
-		for(String input : inputString){
-			//Optional<Token> inputToken = tokenFromString(input);
-			//if (inputToken != Optional.empty()){
-			//	Token validToken = Token(input);
-			//	ARList.add(Token);
-			//}
-			addToken = new Token();
+		for (String word : splitList) {
+			String s = "";
+			for (int i = 0; i < word.length(); i++) {
+				// System.out.println(word.charAt(i));
+				String c = Character.toString(word.charAt(i));
+				switch (c) {
+					case "(":
+					case ")":
+					case "{":
+					case "}":
+					case ";":
+						// System.out.println(s);
+						// System.out.println(c);
+						// if (s != null || s.length() > 0 || s != "") {
+						// 	System.out.println(s);
+						// 	furtherSplitList.add(s);
+						// }
+						furtherSplitList.add(s);
+						furtherSplitList.add(c);
+						s = "";
+						break;
+					case " ":
+						i = word.length();
+						break;
+					default:
+						s += c;
+				}
+				// if token exists, add s to split list, then add token
+				// clear string var
+			}
+			// if (s != null || s.length() > 0 || s != "") {
+			// 	System.out.println(s);
+			// 	furtherSplitList.add(s);
+			// }
+			furtherSplitList.add(s);
 		}
 
-		return ARList;
-    }
+		System.out.println(furtherSplitList);
+
+
+		for(int j = 0; j < furtherSplitList.size(); j++){
+
+		}
+
+		for (String s : furtherSplitList) {
+
+			if(s.length() > 0){
+				try {
+					tokenList.add(tokenFromString(s).get());
+				}
+				catch (NoSuchElementException e) {
+					// tokenList.add(Optional.empty());
+				}
+			}
+			//try {
+			//	tokenList.add(LexicalAnalyser.tokenFromString().get())
+			//}
+		}
+		return tokenList;
+		// return Collections.emptyList();
+	}
 
     private static Optional<Token> tokenFromString(String t) {
         Optional<Token.TokenType> type = tokenTypeOf(t);
