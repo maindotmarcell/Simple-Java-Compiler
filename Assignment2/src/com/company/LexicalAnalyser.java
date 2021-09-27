@@ -19,11 +19,7 @@ public class LexicalAnalyser {
 				// System.out.println(word.charAt(i));
 				String c = Character.toString(word.charAt(i));
 				switch (c) {
-                    case "\"": // followed by stringlit
-                        // while (!(c.matches("\""))) {
-                        //     s += c;
-                        // }
-                        // furtherSplitList.add(Optional.of(Token.TokenType.STRINGLIT));
+                    case "\"":
                     case "\'":
 					case "(":
 					case ")":
@@ -53,9 +49,9 @@ public class LexicalAnalyser {
             String s = furtherSplitList.get(i);
 			if (s.length() > 0) {
 				try {
-                    if (furtherSplitList.get(i-1).matches("\"")) {
+                    if (i > 0 && furtherSplitList.get(i-1).matches("\"")) {
                         tokenList.add(tokenTypeStringLit(s).get());
-                    } else if (furtherSplitList.get(i-1).matches("\'")) {
+                    } else if (i > 0 && furtherSplitList.get(i-1).matches("\'")) {
                         tokenList.add(tokenTypeCharLit(s).get());
                     } else { tokenList.add(tokenFromString(s).get()); }
 				}
@@ -150,8 +146,14 @@ public class LexicalAnalyser {
                 return Optional.of(Token.TokenType.TRUE);
             case "false":
                 return Optional.of(Token.TokenType.FALSE);
-            // default:
-            //     break;
+            case "<":
+                return Optional.of(Token.TokenType.LT);
+            case "<=":
+                return Optional.of(Token.TokenType.LE);
+            case ">":
+                return Optional.of(Token.TokenType.GT);
+            case ">=":
+                return Optional.of(Token.TokenType.GE);
         }
 
         if (t.matches("\"{1}"))
