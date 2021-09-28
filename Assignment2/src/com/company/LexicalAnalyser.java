@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class LexicalAnalyser {
@@ -10,6 +11,11 @@ public class LexicalAnalyser {
 	public static List<Token> analyse(String sourceCode) throws LexicalException {
 		// Turn the input String into a list of Tokens!
 		String[] splitList = sourceCode.split("\\s+");
+        List<String> tokenCase = Arrays.asList(new String[]{
+            "\"", "\'", "(", ")", "{", "}", ";",
+            "=", "+", "-", "*", "/", "==", "%",
+            "<", "<=", ">", ">="
+        });
 		List<String> furtherSplitList = new ArrayList<String>();
 		List<Token> tokenList = new ArrayList<Token>();
 
@@ -18,33 +24,19 @@ public class LexicalAnalyser {
 			for (int i = 0; i < word.length(); i++) {
 				// System.out.println(word.charAt(i));
 				String c = Character.toString(word.charAt(i));
-				switch (c) {
-                    case "\"":
-                    case "\'":
-					case "(":
-					case ")":
-					case "{":
-					case "}":
-					case ";":
-						// System.out.println(s);
-						// System.out.println(c);
-						furtherSplitList.add(s);
-						furtherSplitList.add(c);
-						s = "";
-						break;
-					case " ":
-						i = word.length();
-						break;
-					default:
-						s += c;
-				}
+                if (tokenCase.contains(c)) {
+                    furtherSplitList.add(s);
+                    furtherSplitList.add(c);
+                    s = "";
+                // } else if (c == " ") {
+                //     i = word.length();
+                } else {
+                    s += c;
+                }
 			}
 			furtherSplitList.add(s);
 		}
-
-		System.out.println(furtherSplitList);
-
-		// for (String s : furtherSplitList) {
+		// System.out.println(furtherSplitList);
         for (int i = 0; i < furtherSplitList.size(); i++) {
             String s = furtherSplitList.get(i);
 			if (s.length() > 0) {
@@ -165,6 +157,7 @@ public class LexicalAnalyser {
         if (Character.isAlphabetic(t.charAt(0)) && t.matches("[\\d|\\w]+")) {
             return Optional.of(Token.TokenType.ID);
         }
+
         return Optional.empty();
     }
 
