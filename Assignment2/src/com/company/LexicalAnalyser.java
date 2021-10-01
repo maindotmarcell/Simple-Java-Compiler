@@ -10,11 +10,10 @@ public class LexicalAnalyser {
 
 	public static List<Token> analyse(String sourceCode) throws LexicalException {
 		// Turn the input String into a list of Tokens!
-		String[] splitList = sourceCode.split("\\s+");
+		String[] splitList = sourceCode.split(" ");
         List<String> tokenCase = Arrays.asList(new String[]{
-            "\"", "\'", "(", ")", "{", "}", ";",
-            "=", "+", "-", "*", "/", "==", "%",
-            "<", "<=", ">", ">="
+            "\"", "\'", "(", ")", "{", "}", ";", "=", "+", 
+            "-", "*", "/", "==", "%", "<=", ">=",
         });
 		List<String> furtherSplitList = new ArrayList<String>();
 		List<Token> tokenList = new ArrayList<Token>();
@@ -45,7 +44,16 @@ public class LexicalAnalyser {
                         tokenList.add(tokenTypeStringLit(s).get());
                     } else if (i > 0 && furtherSplitList.get(i-1).matches("\'")) {
                         tokenList.add(tokenTypeCharLit(s).get());
-                    } else { tokenList.add(tokenFromString(s).get()); }
+                    } else if (i < furtherSplitList.size()-1 && furtherSplitList.get(i+1).matches("=")) {
+                        if (furtherSplitList.get(i).matches(">")) { 
+                            tokenList.add(tokenTypeGE(s).get());
+                         }
+                        if (furtherSplitList.get(i).matches("<")) { 
+                            tokenList.add(tokenTypeLE(s).get());
+                         }
+                         i += 1;
+                    }
+                    else { tokenList.add(tokenFromString(s).get()); }
 				}
 				catch (NoSuchElementException e) {
 					// tokenList.add(Optional.empty());
@@ -71,6 +79,20 @@ public class LexicalAnalyser {
 
     private static Optional<Token> tokenTypeCharLit(String t) {
         Optional<Token.TokenType> type = Optional.of(Token.TokenType.CHARLIT);
+        if (type.isPresent())
+            return Optional.of(new Token(type.get(), t));
+        return Optional.empty();
+    }
+
+    private static Optional<Token> tokenTypeGE(String t) {
+        Optional<Token.TokenType> type = Optional.of(Token.TokenType.GE);
+        if (type.isPresent())
+            return Optional.of(new Token(type.get(), t));
+        return Optional.empty();
+    }
+
+    private static Optional<Token> tokenTypeLE(String t) {
+        Optional<Token.TokenType> type = Optional.of(Token.TokenType.LE);
         if (type.isPresent())
             return Optional.of(new Token(type.get(), t));
         return Optional.empty();
@@ -140,12 +162,12 @@ public class LexicalAnalyser {
                 return Optional.of(Token.TokenType.FALSE);
             case "<":
                 return Optional.of(Token.TokenType.LT);
-            case "<=":
-                return Optional.of(Token.TokenType.LE);
+            // case "<=":
+                // return Optional.of(Token.TokenType.LE);
             case ">":
                 return Optional.of(Token.TokenType.GT);
-            case ">=":
-                return Optional.of(Token.TokenType.GE);
+            // case ">=":
+                // return Optional.of(Token.TokenType.GE);
         }
 
         if (t.matches("\"{1}"))
