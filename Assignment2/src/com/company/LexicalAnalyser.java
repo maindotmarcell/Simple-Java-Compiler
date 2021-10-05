@@ -12,8 +12,8 @@ public class LexicalAnalyser {
 		// Turn the input String into a list of Tokens!
 		String[] splitList = sourceCode.split(" ");
         List<String> tokenCase = Arrays.asList(new String[]{
-            "\"", "\'", "(", ")", "{", "}", ";", "=", "+", 
-            "-", "*", "/", "==", "%", "<=", ">=",
+            "\"", "\'", "(", ")", "{", "}",
+            ";", "+", "-", "*", "/", "%"
         });
 		List<String> furtherSplitList = new ArrayList<String>();
 		List<Token> tokenList = new ArrayList<Token>();
@@ -27,8 +27,6 @@ public class LexicalAnalyser {
                     furtherSplitList.add(s);
                     furtherSplitList.add(c);
                     s = "";
-                // } else if (c == " ") {
-                //     i = word.length();
                 } else {
                     s += c;
                 }
@@ -44,20 +42,27 @@ public class LexicalAnalyser {
                         tokenList.add(tokenTypeStringLit(s).get());
                     } else if (i > 0 && furtherSplitList.get(i-1).matches("\'")) {
                         tokenList.add(tokenTypeCharLit(s).get());
-                    } else if (i < furtherSplitList.size()-1 && furtherSplitList.get(i+1).matches("=")) {
-                        if (furtherSplitList.get(i).matches(">")) { 
+                    } else if (i < furtherSplitList.size()-1 && furtherSplitList.get(i).matches(".[=]$")) {
+                        // System.out.println(furtherSplitList.get(i));
+                        if (furtherSplitList.get(i).matches("^[>].*")) { 
                             tokenList.add(tokenTypeGE(s).get());
-                         }
-                        if (furtherSplitList.get(i).matches("<")) { 
+                        } else if (furtherSplitList.get(i).matches("^[<].*")) { 
                             tokenList.add(tokenTypeLE(s).get());
-                         }
-                         i += 1;
+                        } else if (furtherSplitList.get(i).matches("^[=].*")) {
+                            tokenList.add(tokenTypeEqual(s).get());
+                        } else {
+                            tokenList.add(tokenTypeEqual(s).get());
+                        }
                     }
                     else { tokenList.add(tokenFromString(s).get()); }
 				}
 				catch (NoSuchElementException e) {
 					// tokenList.add(Optional.empty());
+                    System.out.print("Token not found: " + e + "\n");
 				}
+                catch (Exception e) {
+                    System.out.print(e);
+                }
 			}
 		}
 		return tokenList;
@@ -69,7 +74,7 @@ public class LexicalAnalyser {
             return Optional.of(new Token(type.get(), t));
         return Optional.empty();
     }
-    
+
     private static Optional<Token> tokenTypeStringLit(String t) {
         Optional<Token.TokenType> type = Optional.of(Token.TokenType.STRINGLIT);
         if (type.isPresent())
@@ -98,6 +103,13 @@ public class LexicalAnalyser {
         return Optional.empty();
     }
 
+    private static Optional<Token> tokenTypeEqual(String t) {
+        Optional<Token.TokenType> type = Optional.of(Token.TokenType.EQUAL);
+        if (type.isPresent())
+            return Optional.of(new Token(type.get(), t));
+        return Optional.empty();
+    }
+    
     private static Optional<Token.TokenType> tokenTypeOf(String t) {
         switch (t) {
             case "public":
@@ -162,10 +174,10 @@ public class LexicalAnalyser {
                 return Optional.of(Token.TokenType.FALSE);
             case "<":
                 return Optional.of(Token.TokenType.LT);
-            // case "<=":
-                // return Optional.of(Token.TokenType.LE);
             case ">":
                 return Optional.of(Token.TokenType.GT);
+            // case "<=":
+                // return Optional.of(Token.TokenType.LE);
             // case ">=":
                 // return Optional.of(Token.TokenType.GE);
         }
