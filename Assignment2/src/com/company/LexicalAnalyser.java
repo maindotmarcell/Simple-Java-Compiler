@@ -1,4 +1,4 @@
-package com.company;
+// package com.company;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
@@ -50,6 +50,8 @@ public class LexicalAnalyser {
                             tokenList.add(tokenTypeLE(s).get());
                         } else if (furtherSplitList.get(i).matches("^[=].*")) {
                             tokenList.add(tokenTypeEqual(s).get());
+                        } else if (furtherSplitList.get(i).matches("^[!].*")) {
+                            tokenList.add(tokenTypeNotEqual(s).get());
                         } else {
                             tokenList.add(tokenTypeEqual(s).get());
                         }
@@ -110,6 +112,13 @@ public class LexicalAnalyser {
         return Optional.empty();
     }
     
+    private static Optional<Token> tokenTypeNotEqual(String t) {
+        Optional<Token.TokenType> type = Optional.of(Token.TokenType.NEQUAL);
+        if (type.isPresent())
+            return Optional.of(new Token(type.get(), t));
+        return Optional.empty();
+    }
+
     private static Optional<Token.TokenType> tokenTypeOf(String t) {
         switch (t) {
             case "public":
