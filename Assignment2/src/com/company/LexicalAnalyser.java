@@ -1,4 +1,5 @@
 package com.company;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
@@ -38,29 +39,30 @@ public class LexicalAnalyser {
             String s = furtherSplitList.get(i);
             if (s.length() > 0) {
                 try {
-                    if (i > 0 && furtherSplitList.get(i-1).matches("\"")) {
+                    if (i > 0 && furtherSplitList.get(i - 1).matches("\"")) {
                         tokenList.add(tokenTypeStringLit(s).get());
-                    } else if (i > 0 && furtherSplitList.get(i-1).matches("\'")) {
+                    } else if (i > 0 && furtherSplitList.get(i - 1).matches("\'")) {
                         tokenList.add(tokenTypeCharLit(s).get());
-                    } else if (i < furtherSplitList.size()-1 && furtherSplitList.get(i).matches(".[=]$")) {
+                    } else if (i < furtherSplitList.size() - 1 && furtherSplitList.get(i).matches(".[=]$")) {
                         // System.out.println(furtherSplitList.get(i));
                         if (furtherSplitList.get(i).matches("^[>].*")) {
                             tokenList.add(tokenTypeGE(s).get());
                         } else if (furtherSplitList.get(i).matches("^[<].*")) {
                             tokenList.add(tokenTypeLE(s).get());
+                        } else if (furtherSplitList.get(i).matches("^[!].*")) {
+                            tokenList.add(tokenTypeNE(s).get());
                         } else if (furtherSplitList.get(i).matches("^[=].*")) {
                             tokenList.add(tokenTypeEqual(s).get());
                         } else {
                             tokenList.add(tokenTypeEqual(s).get());
                         }
+                    } else {
+                        tokenList.add(tokenFromString(s).get());
                     }
-                    else { tokenList.add(tokenFromString(s).get()); }
-                }
-                catch (NoSuchElementException e) {
+                } catch (NoSuchElementException e) {
                     // tokenList.add(Optional.empty());
                     System.out.print("Token not found: " + e + "\n");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.out.print(e);
                 }
             }
@@ -105,6 +107,13 @@ public class LexicalAnalyser {
 
     private static Optional<Token> tokenTypeEqual(String t) {
         Optional<Token.TokenType> type = Optional.of(Token.TokenType.EQUAL);
+        if (type.isPresent())
+            return Optional.of(new Token(type.get(), t));
+        return Optional.empty();
+    }
+
+    private static Optional<Token> tokenTypeNE(String t) {
+        Optional<Token.TokenType> type = Optional.of(Token.TokenType.NEQUAL);
         if (type.isPresent())
             return Optional.of(new Token(type.get(), t));
         return Optional.empty();
