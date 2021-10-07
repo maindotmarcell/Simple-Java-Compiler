@@ -1,14 +1,76 @@
 package com.company;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Collections;
+import java.util.*;
 
 public class LexicalAnalyser {
 
+
 	public static List<Token> analyse(String sourceCode) throws LexicalException {
-		//Turn the input String into a list of Tokens!
-		return Collections.emptyList();
+		// Turn the input String into a list of Tokens!
+		String[] splitList = sourceCode.split("\\s+");
+		List<String> furtherSplitList = new ArrayList<String>();
+		List<Token> tokenList = new ArrayList<Token>();
+
+		for (String word : splitList) {
+			String s = "";
+			for (int i = 0; i < word.length(); i++) {
+				// System.out.println(word.charAt(i));
+				String c = Character.toString(word.charAt(i));
+				switch (c) {
+					case "(":
+					case ")":
+					case "{":
+					case "}":
+					case ";":
+						// System.out.println(s);
+						// System.out.println(c);
+						// if (s != null || s.length() > 0 || s != "") {
+						// 	System.out.println(s);
+						// 	furtherSplitList.add(s);
+						// }
+						furtherSplitList.add(s);
+						furtherSplitList.add(c);
+						s = "";
+						break;
+					case " ":
+						i = word.length();
+						break;
+					default:
+						s += c;
+				}
+				// if token exists, add s to split list, then add token
+				// clear string var
+			}
+			// if (s != null || s.length() > 0 || s != "") {
+			// 	System.out.println(s);
+			// 	furtherSplitList.add(s);
+			// }
+			furtherSplitList.add(s);
+		}
+
+		System.out.println(furtherSplitList);
+
+
+		for(int j = 0; j < furtherSplitList.size(); j++){
+
+		}
+
+		for (String s : furtherSplitList) {
+
+			if(s.length() > 0){
+				try {
+					tokenList.add(tokenFromString(s).get());
+				}
+				catch (NoSuchElementException e) {
+					// tokenList.add(Optional.empty());
+				}
+			}
+			//try {
+			//	tokenList.add(LexicalAnalyser.tokenFromString().get())
+			//}
+		}
+		System.out.println(tokenList);
+		return tokenList;
+		// return Collections.emptyList();
 	}
 
 	private static Optional<Token> tokenFromString(String t) {
