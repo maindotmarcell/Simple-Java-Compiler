@@ -11,8 +11,9 @@ public class LexicalAnalyser {
 
     public static List<Token> analyse(String sourceCode) throws LexicalException {
         // Turn the input String into a list of Tokens!
+        // split source code by spaces into a list and initialize all other necessary lists
         String[] splitList = sourceCode.split(" ");
-        List<String> tokenCase = Arrays.asList(new String[]{
+        List<String> tokenCase = Arrays.asList(new String[]{ // list to check characters against
                 "\"", "\'", "(", ")", "{", "}",
                 ";", "+", "-", "*", "/", "%"
         });
@@ -21,20 +22,20 @@ public class LexicalAnalyser {
 
         for (String word : splitList) {
             String s = "";
-            for (int i = 0; i < word.length(); i++) {
+            for (int i = 0; i < word.length(); i++) { // iterate through the word
                 // System.out.println(word.charAt(i));
                 String c = Character.toString(word.charAt(i));
-                if (tokenCase.contains(c)) {
-                    furtherSplitList.add(s);
-                    furtherSplitList.add(c);
+                if (tokenCase.contains(c)) { // check against list of tokens
+                    furtherSplitList.add(s); // add whatever we have in the list
+                    furtherSplitList.add(c); // add the last character as a separate token
                     s = "";
                 } else {
-                    s += c;
+                    s += c; // if character wasn't a separator keep adding to s
                 }
             }
             furtherSplitList.add(s);
         }
-        // System.out.println(furtherSplitList);
+        // start adding tokens to the token list based on what we have in further split list
         for (int i = 0; i < furtherSplitList.size(); i++) {
             String s = furtherSplitList.get(i);
             if (s.length() > 0) {
@@ -60,7 +61,6 @@ public class LexicalAnalyser {
                         tokenList.add(tokenFromString(s).get());
                     }
                 } catch (NoSuchElementException e) {
-                    // tokenList.add(Optional.empty());
                     System.out.print("Token not found: " + e + "\n");
                 } catch (Exception e) {
                     System.out.print(e);

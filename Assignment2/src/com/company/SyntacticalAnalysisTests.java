@@ -60,8 +60,6 @@ public class SyntacticalAnalysisTests {
 		assertEquals(children.get(i).getLabel(), TreeNode.Label.terminal);
 		assertEquals(children.get(i++).getToken().get().getType(), Token.TokenType.PUBLIC);
 		assertEquals(children.get(i).getLabel(), TreeNode.Label.terminal);
-		assertEquals(children.get(i++).getToken().get().getType(), Token.TokenType.STATIC);
-		assertEquals(children.get(i).getLabel(), TreeNode.Label.terminal);
 		assertEquals(children.get(i++).getToken().get().getType(), Token.TokenType.VOID);
 		assertEquals(children.get(i).getLabel(), TreeNode.Label.terminal);
 		assertEquals(children.get(i++).getToken().get().getType(), Token.TokenType.MAIN);
