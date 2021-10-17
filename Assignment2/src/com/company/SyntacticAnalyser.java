@@ -10,6 +10,128 @@ import java.util.Map;
 
 public class SyntacticAnalyser {
 
+	private static String tokenToString(Token token) {
+		switch (token.getType()) {
+			case PLUS:
+				return "+";
+				break;
+			case MINUS:
+				return "-";
+				break;
+			case TIMES:
+				return "*";
+				break;
+			case DIVIDE:
+				return "/";
+				break;
+			case MOD:
+				return "%";
+				break;
+			case ASSIGN:
+				return "=";
+				break;
+			case EQUAL:
+				return "==";
+				break;
+			case NEQUAL:
+				return "!=";
+				break;
+			case LT:
+				return "<";
+				break;
+			case LE:
+				return "<=";
+				break;
+			case GT:
+				return ">";
+				break;
+			case GE:
+				return ">=";
+				break;
+			case LPAREN:
+				return "(";
+				break;
+			case RPAREN:
+				return ")";
+				break;
+			case LBRACE:
+				return "{";
+				break;
+			case RBRACE:
+				return "}";
+				break;
+			case AND:
+				return "&&";
+				break;
+			case OR:
+				return "||";
+				break;
+			case SEMICOLON:
+				return ";";
+				break;
+			case PUBLIC:
+				return "public";
+				break;
+			case CLASS:
+				return "class";
+				break;
+			case STATIC:
+				return "static";
+				break;
+			case VOID:
+				return "void";
+				break;
+			case MAIN:
+				return "Main";
+				break;
+			case STRINGARR:
+				return "String[]";
+				break;
+			case ARGS:
+				return "args";
+				break;
+			case TYPE:
+				return token.getValue() + "";
+				break;
+			case PRINT:
+				return "System.out.println(";
+				break;
+			case WHILE:
+				return "while";
+				break;
+			case FOR:
+				return "for";
+				break;
+			case IF:
+				return "if";
+				break;
+			case ELSE:
+				return "else";
+				break;
+			case DQUOTE:
+				return "\"";
+				break;
+			case SQUOTE:
+				return "'";
+				break;
+			case ID:
+				return "ID";
+				break;
+			case NUM:
+				return "num";
+				break;
+			case TRUE:
+				return "true";
+				break;
+			case FALSE:
+				return "false";
+				break;
+			case STRINGLIT:
+				return "Stringlit";
+				break;
+		}
+	}
+
 	public static ParseTree parse(List<Token> tokens) throws SyntaxException {
 
 		// Model Parsing table in a HashMap -- Marcell
