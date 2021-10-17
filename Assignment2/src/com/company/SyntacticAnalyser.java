@@ -106,6 +106,7 @@ public class SyntacticAnalyser {
 			put("ID",2);
 			put("}}",3);
 			put(";",2);
+			put("while",2); // +
 			put("}",3);
 			put("for",2);
 			put("if",2);
@@ -155,6 +156,7 @@ public class SyntacticAnalyser {
 			put("}}",20);
 			put(";",20);
 			put("while",20);
+			put("}",20); // +
 			put("for",20);
 			put("if",20);
 			put("else",19);
@@ -169,7 +171,7 @@ public class SyntacticAnalyser {
 		}});
 		parseTable.put("Possif", new HashMap<String, Integer>() {{
 			put("{",23);
-			put("for",22);
+			put("if",22); // for -> if
 			put("",23);
 		}});
 		parseTable.put("Assign", new HashMap<String, Integer>() {{
