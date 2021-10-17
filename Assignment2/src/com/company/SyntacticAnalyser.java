@@ -82,7 +82,7 @@ public class SyntacticAnalyser {
 				return "void";
 				break;
 			case MAIN:
-				return "Main";
+				return "main";
 				break;
 			case STRINGARR:
 				return "String[]";
