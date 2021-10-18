@@ -104,7 +104,6 @@ public class SyntacticAnalyser {
 		}});
 		parseTable.put("Los", new HashMap<String, Integer>() {{
 			put("ID",2);
-			put("}}",3);
 			put(";",2);
 			put("while",2); // +
 			put("}",3);
@@ -153,7 +152,6 @@ public class SyntacticAnalyser {
 		}});
 		parseTable.put("Elseif", new HashMap<String, Integer>() {{
 			put("ID",20);
-			put("}}",20);
 			put(";",20);
 			put("while",20);
 			put("}",20); // +
