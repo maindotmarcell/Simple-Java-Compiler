@@ -10,6 +10,90 @@ import java.util.Map;
 
 public class SyntacticAnalyser {
 
+	private static String tokenToString(Token token) {
+		switch (token.getType()) {
+			case PLUS:
+				return "+";
+			case MINUS:
+				return "-";
+			case TIMES:
+				return "*";
+			case DIVIDE:
+				return "/";
+			case MOD:
+				return "%";
+			case ASSIGN:
+				return "=";
+			case EQUAL:
+				return "==";
+			case NEQUAL:
+				return "!=";
+			case LT:
+				return "<";
+			case LE:
+				return "<=";
+			case GT:
+				return ">";
+			case GE:
+				return ">=";
+			case LPAREN:
+				return "(";
+			case RPAREN:
+				return ")";
+			case LBRACE:
+				return "{";
+			case RBRACE:
+				return "}";
+			case AND:
+				return "&&";
+			case OR:
+				return "||";
+			case SEMICOLON:
+				return ";";
+			case PUBLIC:
+				return "public";
+			case CLASS:
+				return "class";
+			case STATIC:
+				return "static";
+			case VOID:
+				return "void";
+			case MAIN:
+				return "main";
+			case STRINGARR:
+				return "String[]";
+			case ARGS:
+				return "args";
+			case TYPE:
+				return token.getValue() + "";
+			case PRINT:
+				return "System.out.println(";
+			case WHILE:
+				return "while";
+			case FOR:
+				return "for";
+			case IF:
+				return "if";
+			case ELSE:
+				return "else";
+			case DQUOTE:
+				return "\"";
+			case SQUOTE:
+				return "'";
+			case ID:
+				return "ID";
+			case NUM:
+				return "num";
+			case TRUE:
+				return "true";
+			case FALSE:
+				return "false";
+			case STRINGLIT:
+				return "Stringlit";
+		}
+		return "";
+	}
+
 	public static ParseTree parse(List<Token> tokens) throws SyntaxException {
 
 		// Model Parsing table in a HashMap -- Marcell
@@ -20,7 +104,6 @@ public class SyntacticAnalyser {
 		}});
 		parseTable.put("Los", new HashMap<String, Integer>() {{
 			put("ID",2);
-			put("}}",3);
 			put(";",2);
 			put("while",2); // +
 			put("}",3);
@@ -69,7 +152,6 @@ public class SyntacticAnalyser {
 		}});
 		parseTable.put("Elseif", new HashMap<String, Integer>() {{
 			put("ID",20);
-			put("}}",20);
 			put(";",20);
 			put("while",20);
 			put("}",20); // +
