@@ -357,11 +357,246 @@ public class SyntacticAnalyser {
                         break;
                     case 2:
                         stack.pop();
-                        stack.push(new Pair<>(TreeNode.Label.stat, ""));
                         stack.push(new Pair<>(TreeNode.Label.los, ""));
+                        stack.push(new Pair<>(TreeNode.Label.stat, ""));
                         break;
                     case 3:
                         stack.pop();
+                        //stack.push(new Pair<TreeNode.label.epsilon>, "");
+                        break;
+                    case 4:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.whilestat>, "");
+                        break;
+                    case 5:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.forstat>, "");
+                        break;
+                    case 6:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.ifstat>, "");
+                        break;
+                    case 7:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.assign>, "");
+                        break;
+                    case 8:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.decl>, "");
+                        break;
+                    case 9:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.print>, "");
+                        break;
+                    case 10:
+                        stack.pop();
+                        //stack.push(new Pair<TreeNode.label.epsilon>, "");
+                        break;
+                    case 11:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.whilestat>, "}");
+                        stack.push(new Pair<TreeNode.label.los>, "");
+                        stack.push(new Pair<TreeNode.label.whilestat>, "{");
+                        stack.push(new Pair<TreeNode.label.whilestat>, ")");
+                        stack.push(new Pair<TreeNode.label.boolexpr>, "");
+                        stack.push(new Pair<TreeNode.label.relexpr>, "");
+                        stack.push(new Pair<TreeNode.label.whilestat>, "(");
+                        stack.push(new Pair<TreeNode.label.whilestat>, "while");
+                        break;
+                    case 12:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.forstat>, "}");
+                        stack.push(new Pair<TreeNode.label.los>, "");
+                        stack.push(new Pair<TreeNode.label.forstat>, "{");
+                        stack.push(new Pair<TreeNode.label.forstat>, ")");
+                        stack.push(new Pair<TreeNode.label.forarith>, "");
+                        stack.push(new Pair<TreeNode.label.forstat>, ";");
+                        stack.push(new Pair<TreeNode.label.boolexpr>, "");
+                        stack.push(new Pair<TreeNode.label.relexpr>, "");
+                        stack.push(new Pair<TreeNode.label.forstat>, ";");
+                        stack.push(new Pair<TreeNode.label.forstart>, "");
+                        stack.push(new Pair<TreeNode.label.forstat>, "(");
+                        stack.push(new Pair<TreeNode.label.forstat>, "if");
+                        break;
+                    case 13:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.decl>, "");
+                        break;
+                    case 14:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.assign>, "");
+                        break;
+                    case 15:
+                        stack.pop();
+                        //stack.push(new Pair<TreeNode.label.epsilon>, "");
+                        break;
+                    case 16:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.arithexpr>, "");
+                        break;
+                    case 17:
+                        stack.pop();
+                        //stack.push(new Pair<TreeNode.label.epsilon>, "");
+                        break;
+                    case 18:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.elseifstat>, "");
+                        stack.push(new Pair<TreeNode.label.ifstat>, "}");
+                        stack.push(new Pair<TreeNode.label.los>, "");
+                        stack.push(new Pair<TreeNode.label.ifstat>, "{");
+                        stack.push(new Pair<TreeNode.label.ifstat>, ")");
+                        stack.push(new Pair<TreeNode.label.boolexpr>, "");
+                        stack.push(new Pair<TreeNode.label.relexpr>, "");
+                        stack.push(new Pair<TreeNode.label.ifstat>, "(");
+                        stack.push(new Pair<TreeNode.label.ifstat>, "if");
+                        break;
+                    case 19:
+                        stack.pop();
+                        stack.push(new Pair<TreeNode.label.elseifstat>, "");
+                        stack.push(new Pair<TreeNode.label.elseifstat>, "}");
+                        stack.push(new Pair<TreeNode.label.los>, "");
+                        stack.push(new Pair<TreeNode.label.elseifstat>, "{");
+                        stack.push(new Pair<TreeNode.label.elseorelseif>, "");
+                        break;
+                    case 20:
+                        stack.pop();
+
+                        break;
+                    case 21:
+                        stack.pop();
+                        break;
+                    case 22:
+                        stack.pop();
+                        break;
+                    case 23:
+                        stack.pop();
+                        break;
+                    case 24:
+                        stack.pop();
+                        break;
+                    case 25:
+                        stack.pop();
+                        break;
+                    case 26:
+                        stack.pop();
+                        break;
+                    case 27:
+                        stack.pop();
+                        break;
+                    case 28:
+                        stack.pop();
+                        break;
+                    case 29:
+                        stack.pop();
+                        break;
+                    case 30:
+                        stack.pop();
+                        break;
+                    case 31:
+                        stack.pop();
+                        break;
+                    case 32:
+                        stack.pop();
+                        break;
+                    case 33:
+                        stack.pop();
+                        break;
+                    case 34:
+                        stack.pop();
+                        break;
+                    case 35:
+                        stack.pop();
+                        break;
+                    case 36:
+                        stack.pop();
+                        break;
+                    case 37:
+                        stack.pop();
+                        break;
+                    case 38:
+                        stack.pop();
+                        break;
+                    case 39:
+                        stack.pop();
+                        break;
+                    case 40:
+                        stack.pop();
+                        break;
+                    case 41:
+                        stack.pop();
+                        break;
+                    case 42:
+                        stack.pop();
+                        break;
+                    case 43:
+                        stack.pop();
+                        break;
+                    case 44:
+                        stack.pop();
+                        break;
+                    case 45:
+                        stack.pop();
+                        break;
+                    case 46:
+                        stack.pop();
+                        break;
+                    case 47:
+                        stack.pop();
+                        break;
+                    case 48:
+                        stack.pop();
+                        break;
+                    case 49:
+                        stack.pop();
+                        break;
+                    case 50:
+                        stack.pop();
+                        break;
+                    case 51:
+                        stack.pop();
+                        break;
+                    case 52:
+                        stack.pop();
+                        break;
+                    case 53:
+                        stack.pop();
+                        break;
+                    case 54:
+                        stack.pop();
+                        break;
+                    case 55:
+                        stack.pop();
+                        break;
+                    case 56:
+                        stack.pop();
+                        break;
+                    case 57:
+                        stack.pop();
+                        break;
+                    case 58:
+                        stack.pop();
+                        break;
+                    case 59:
+                        stack.pop();
+                        break;
+                    case 60:
+                        stack.pop();
+                        break;
+                    case 61:
+                        stack.pop();
+                        break;
+                    case 62:
+                        stack.pop();
+                        break;
+                    case 63:
+                        stack.pop();
+                        break;
+                    case 64:
+                        stack.pop();
+                        break;
+                    case 65:
+                        stack.pop();
+                        stack.push();
                         break;
                 }
             }
