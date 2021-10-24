@@ -100,7 +100,7 @@ public class SyntacticAnalyser {
 
     public static TreeNode createNode(TreeNode parent, TreeNode.Label childLabel) {
         TreeNode newNode = new TreeNode(childLabel, parent);
-        parent.addChild(newNode);
+//        parent.addChild(newNode);
         return newNode;
     }
 
@@ -330,13 +330,16 @@ public class SyntacticAnalyser {
         stack.push(new Pair<>(currentNode, ""));
 
         for (Token token : tokens) {
+            System.out.println(tree.toString());
 
-            if (stack.getFirst().getValue().equals("")) { // ------- if the we are at a variable we start checking for rules
+            if (stack.getFirst().getValue().equals("")) { // ------- if we are at a variable we start checking for rules
                 boolean terminalAvailable = false;
                 while (!terminalAvailable) { // ---- makes sure that we don't go onto the next token until we process it as a terminal
 
-                    if (!stack.getFirst().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
-                        currentNode = stack.getFirst().getKey();
+                    if (!stack.getFirst().getKey().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
+//                        TreeNode newNode = new TreeNode(stack.getFirst().getKey().getLabel(),currentNode);
+                            currentNode.addChild(stack.getFirst().getKey());
+                            currentNode = stack.getFirst().getKey(); // ----------- main issue is here, doesn't indent backwards
                     }
 
                     int ruleNum = (int) parseTable.get(currentNode.getLabel()).get(tokenToString(token)); // ----------- checks if a rule goes with the variable
@@ -691,14 +694,11 @@ public class SyntacticAnalyser {
                 }
             }
             if (tokenToString(token).equals(stack.getFirst().getValue())) { // ----------------------------------------- handles if it's a terminal
-                currentNode.addChild(new TreeNode(stack.getFirst().getKey().getLabel(), token, currentNode));
+                currentNode.addChild(new TreeNode(TreeNode.Label.terminal, token, currentNode));
                 stack.pop();
             }
 
         }
-
-
-
 
 
         //Turn the List of Tokens into a ParseTree.
