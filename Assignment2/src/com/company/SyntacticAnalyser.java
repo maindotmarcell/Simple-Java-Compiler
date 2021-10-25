@@ -13,103 +13,499 @@ import java.util.Map;
 
 public class SyntacticAnalyser {
 
-    private static String tokenToString(Token token) {
-        switch (token.getType()) {
-            case PLUS:
-                return "+";
-            case MINUS:
-                return "-";
-            case TIMES:
-                return "*";
-            case DIVIDE:
-                return "/";
-            case MOD:
-                return "%";
-            case ASSIGN:
-                return "=";
-            case EQUAL:
-                return "==";
-            case NEQUAL:
-                return "!=";
-            case LT:
-                return "<";
-            case LE:
-                return "<=";
-            case GT:
-                return ">";
-            case GE:
-                return ">=";
-            case LPAREN:
-                return "(";
-            case RPAREN:
-                return ")";
-            case LBRACE:
-                return "{";
-            case RBRACE:
-                return "}";
-            case AND:
-                return "&&";
-            case OR:
-                return "||";
-            case SEMICOLON:
-                return ";";
-            case PUBLIC:
-                return "public";
-            case CLASS:
-                return "class";
-            case STATIC:
-                return "static";
-            case VOID:
-                return "void";
-            case MAIN:
-                return "main";
-            case STRINGARR:
-                return "String[]";
-            case ARGS:
-                return "args";
-            case TYPE:
-                return "int";
-            case PRINT:
-                return "System.out.println";
-            case WHILE:
-                return "while";
-            case FOR:
-                return "for";
-            case IF:
-                return "if";
-            case ELSE:
-                return "else";
-            case DQUOTE:
-                return "\"";
-            case SQUOTE:
-                return "'";
-            case ID:
-                return "ID";
-            case NUM:
-                return "num";
-            case TRUE:
-                return "true";
-            case FALSE:
-                return "false";
-            case STRINGLIT:
-                return "Stringlit";
-        }
-        return "";
-    }
 
 
     public static TreeNode createNode(TreeNode parent, TreeNode.Label childLabel) {
         TreeNode newNode = new TreeNode(childLabel, parent);
-//        parent.addChild(newNode);
+        parent.addChild(newNode);
         return newNode;
     }
+
+    public static void createLeaf(TreeNode parent) {
+        parent.addChild(new TreeNode(TreeNode.Label.terminal, parent));
+    }
+
 
 
     public static ParseTree parse(List<Token> tokens) throws SyntaxException {
 
 
+        HashMap<TreeNode.Label, HashMap<String, Integer>> parseTable = createTable();
+        Deque<Pair<TreeNode, String>> stack = new ArrayDeque<>();
+        ParseTree tree = new ParseTree();
+        tree.setRoot(new TreeNode(TreeNode.Label.prog, null));
+        TreeNode currentNode = tree.getRoot();
+
+        stack.push(new Pair<>(currentNode, ""));
+
+        for (Token token : tokens) {
+            System.out.println(tree.toString());
+
+            if (stack.getFirst().getValue().equals("")) { // ------- if we are at a variable we start checking for rules
+                boolean terminalAvailable = false;
+                while (!terminalAvailable) { // ---- makes sure that we don't go onto the next token until we process it as a terminal
+
+                    if (!stack.getFirst().getKey().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
+//                        TreeNode newNode = new TreeNode(stack.getFirst().getKey().getLabel(),currentNode);
+//                            currentNode.addChild(stack.getFirst().getKey());
+                        stack.getFirst().getKey().setToken(token);
+                        currentNode = stack.getFirst().getKey();
+                    }
+
+                    int ruleNum = (int) parseTable.get(currentNode.getLabel()).get(tokenToString(token)); // ----------- checks if a rule goes with the variable
+                    switch (ruleNum) {
+                        case 1:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "args"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "String[]"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "main"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "void"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "static"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "public"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "ID"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "class"));
+                            createLeaf(currentNode);
+                            // stack.push("public"); -- this gets popped right away
+                            break;
+                        case 2:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.stat), ""));
+                            break;
+                        case 3:
+                            stack.pop();
+                            break;
+                        case 4:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.whilestat), ""));
+                            break;
+                        case 5:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forstat), ""));
+                            break;
+                        case 6:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.ifstat), ""));
+                            break;
+                        case 7:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ";"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.assign), ""));
+                            break;
+                        case 8:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ";"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.decl), ""));
+                            break;
+                        case 9:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ";"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.print), ""));
+                            break;
+                        case 10:
+                            stack.pop();
+                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
+                            break;
+                        case 11:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "while"));
+                            createLeaf(currentNode);
+                            break;
+                        case 12:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forarith), ""));
+                            stack.push(new Pair<>(currentNode, ";"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            stack.push(new Pair<>(currentNode, ";"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forstart), ""));
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "if"));
+                            createLeaf(currentNode);
+                            break;
+                        case 13:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.decl), ""));
+                            break;
+                        case 14:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.assign), ""));
+                            break;
+                        case 15:
+                            stack.pop();
+                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
+                            break;
+                        case 16:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
+                            break;
+                        case 17:
+                            stack.pop();
+                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
+                            break;
+                        case 18:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "if"));
+                            createLeaf(currentNode);
+                            break;
+                        case 19:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
+                            stack.push(new Pair<>(currentNode, "}"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
+                            stack.push(new Pair<>(currentNode, "{"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseorelseif), ""));
+                            break;
+                        case 20:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 21:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possif), ""));
+                            stack.push(new Pair<>(currentNode, "else"));
+                            createLeaf(currentNode);
+                            break;
+                        case 22:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "if"));
+                            createLeaf(currentNode);
+                            break;
+                        case 23:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 24:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
+                            stack.push(new Pair<>(currentNode, "="));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "ID"));
+                            createLeaf(currentNode);
+                            break;
+                        case 25:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possassign), ""));
+                            stack.push(new Pair<>(currentNode, "ID"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.type), ""));
+                            break;
+                        case 26:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
+                            stack.push(new Pair<>(currentNode, "="));
+                            createLeaf(currentNode);
+                            break;
+                        case 27:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 28:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "System.out.println"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.printexpr), ""));
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            break;
+                        case 29:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "int"));
+                            createLeaf(currentNode);
+                            break;
+                        case 30:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "char"));
+                            createLeaf(currentNode);
+                            break;
+                        case 31:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "boolean"));
+                            createLeaf(currentNode);
+                            break;
+                        case 32:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            break;
+                        case 33:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.charexpr), ""));
+                            break;
+                        case 34:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "'"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "Char"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "'"));
+                            createLeaf(currentNode);
+                            break;
+                        case 35:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolop), ""));
+                            break;
+                        case 36:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 37:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.booleq), ""));
+                            break;
+                        case 38:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boollog), ""));
+                            break;
+                        case 39:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "=="));
+                            createLeaf(currentNode);
+                            break;
+                        case 40:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "!="));
+                            createLeaf(currentNode);
+                            break;
+                        case 41:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "&&"));
+                            createLeaf(currentNode);
+                            break;
+                        case 42:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "||"));
+                            createLeaf(currentNode);
+                            break;
+                        case 43:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexprprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
+                            break;
+                        case 44:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "true"));
+                            createLeaf(currentNode);
+                            break;
+                        case 45:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "false"));
+                            createLeaf(currentNode);
+                            break;
+                        case 46:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relop), ""));
+                            break;
+                        case 47:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 48:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "<"));
+                            createLeaf(currentNode);
+                            break;
+                        case 49:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "<="));
+                            createLeaf(currentNode);
+                            break;
+                        case 50:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ">"));
+                            createLeaf(currentNode);
+                            break;
+                        case 51:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ">="));
+                            createLeaf(currentNode);
+                            break;
+                        case 52:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
+                            break;
+                        case 53:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
+                            stack.push(new Pair<>(currentNode, "+"));
+                            createLeaf(currentNode);
+                            break;
+                        case 54:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
+                            stack.push(new Pair<>(currentNode, "-"));
+                            createLeaf(currentNode);
+                            break;
+                        case 55:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 56:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
+                            break;
+                        case 57:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
+                            stack.push(new Pair<>(currentNode, "*"));
+                            createLeaf(currentNode);
+                            break;
+                        case 58:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
+                            stack.push(new Pair<>(currentNode, "/"));
+                            createLeaf(currentNode);
+                            break;
+                        case 59:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
+                            stack.push(new Pair<>(currentNode, "%"));
+                            createLeaf(currentNode);
+                            break;
+                        case 60:
+                            stack.pop();
+                            //stack.push(new Pair<>(currentNode, ""));
+                            break;
+                        case 61:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, ")"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
+                            stack.push(new Pair<>(currentNode, "("));
+                            createLeaf(currentNode);
+                            break;
+                        case 62:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "ID"));
+                            createLeaf(currentNode);
+                            break;
+                        case 63:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "num"));
+                            createLeaf(currentNode);
+                            break;
+                        case 64:
+                            stack.pop();
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
+                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
+                            break;
+                        case 65:
+                            stack.pop();
+                            stack.push(new Pair<>(currentNode, "\""));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "StringLit"));
+                            createLeaf(currentNode);
+                            stack.push(new Pair<>(currentNode, "\""));
+                            createLeaf(currentNode);
+                            break;
+                    }
+                    if (!stack.getFirst().getValue().equals(""))
+                        terminalAvailable = true;
+                }
+            }
+            if (tokenToString(token).equals(stack.getFirst().getValue())) { // ----------------------------------------- handles if it's a terminal
+//                currentNode.addChild(new TreeNode(TreeNode.Label.terminal, token, currentNode));
+//                stack.getFirst().getKey().setToken(token);
+                stack.pop();
+            }
+
+        }
+
+
+        //Turn the List of Tokens into a ParseTree.
+        return tree;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static HashMap<TreeNode.Label, HashMap<String, Integer>> createTable() {
+
         // Model Parsing table in a HashMap -- Marcell
-        HashMap<TreeNode.Label, HashMap> parseTable = new HashMap<>();
+        HashMap<TreeNode.Label, HashMap<String, Integer>> parseTable = new HashMap<>();
         // add rows as the value of each key
         parseTable.put(TreeNode.Label.prog, new HashMap<String, Integer>() {{
             put("public", 1);
@@ -321,388 +717,90 @@ public class SyntacticAnalyser {
             put("num", 64);
             put("\"", 65);
         }});
-
-        Deque<Pair<TreeNode, String>> stack = new ArrayDeque<>();
-        ParseTree tree = new ParseTree();
-        tree.setRoot(new TreeNode(TreeNode.Label.prog, null));
-        TreeNode currentNode = tree.getRoot();
-
-        stack.push(new Pair<>(currentNode, ""));
-
-        for (Token token : tokens) {
-            System.out.println(tree.toString());
-
-            if (stack.getFirst().getValue().equals("")) { // ------- if we are at a variable we start checking for rules
-                boolean terminalAvailable = false;
-                while (!terminalAvailable) { // ---- makes sure that we don't go onto the next token until we process it as a terminal
-
-                    if (!stack.getFirst().getKey().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
-//                        TreeNode newNode = new TreeNode(stack.getFirst().getKey().getLabel(),currentNode);
-                            currentNode.addChild(stack.getFirst().getKey());
-                            currentNode = stack.getFirst().getKey(); // ----------- main issue is here, doesn't indent backwards
-                    }
-
-                    int ruleNum = (int) parseTable.get(currentNode.getLabel()).get(tokenToString(token)); // ----------- checks if a rule goes with the variable
-                    switch (ruleNum) {
-                        case 1:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(currentNode, "args"));
-                            stack.push(new Pair<>(currentNode, "String[]"));
-                            stack.push(new Pair<>(currentNode, "("));
-                            stack.push(new Pair<>(currentNode, "main"));
-                            stack.push(new Pair<>(currentNode, "void"));
-                            stack.push(new Pair<>(currentNode, "static"));
-                            stack.push(new Pair<>(currentNode, "public"));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            stack.push(new Pair<>(currentNode, "class"));
-                            // stack.push("public"); -- this gets popped right away
-                            break;
-                        case 2:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.stat), ""));
-                            break;
-                        case 3:
-                            stack.pop();
-                            break;
-                        case 4:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.whilestat), ""));
-                            break;
-                        case 5:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forstat), ""));
-                            break;
-                        case 6:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.ifstat), ""));
-                            break;
-                        case 7:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.assign), ""));
-                            break;
-                        case 8:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.decl), ""));
-                            break;
-                        case 9:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.print), ""));
-                            break;
-                        case 10:
-                            stack.pop();
-                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
-                            break;
-                        case 11:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            stack.push(new Pair<>(currentNode, "while"));
-                            break;
-                        case 12:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forarith), ""));
-                            stack.push(new Pair<>(currentNode, ";"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, ";"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forstart), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            stack.push(new Pair<>(currentNode, "if"));
-                            break;
-                        case 13:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.decl), ""));
-                            break;
-                        case 14:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.assign), ""));
-                            break;
-                        case 15:
-                            stack.pop();
-                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
-                            break;
-                        case 16:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
-                            break;
-                        case 17:
-                            stack.pop();
-                            //stack.push(new Pair<TreeNode.Label.epsilon>, "");
-                            break;
-                        case 18:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            stack.push(new Pair<>(currentNode, "if"));
-                            break;
-                        case 19:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
-                            stack.push(new Pair<>(currentNode, "}"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseorelseif), ""));
-                            break;
-                        case 20:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 21:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possif), ""));
-                            stack.push(new Pair<>(currentNode, "else"));
-                            break;
-                        case 22:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            stack.push(new Pair<>(currentNode, "if"));
-                            break;
-                        case 23:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 24:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
-                            stack.push(new Pair<>(currentNode, "="));
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            break;
-                        case 25:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possassign), ""));
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.type), ""));
-                            break;
-                        case 26:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
-                            stack.push(new Pair<>(currentNode, "="));
-                            break;
-                        case 27:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 28:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "System.out.println("));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.printexpr), ""));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            break;
-                        case 29:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "int"));
-                            break;
-                        case 30:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "char"));
-                            break;
-                        case 31:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "boolean"));
-                            break;
-                        case 32:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            break;
-                        case 33:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.charexpr), ""));
-                            break;
-                        case 34:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "'"));
-                            stack.push(new Pair<>(currentNode, "Char"));
-                            stack.push(new Pair<>(currentNode, "'"));
-                            break;
-                        case 35:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolop), ""));
-                            break;
-                        case 36:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 37:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.booleq), ""));
-                            break;
-                        case 38:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boollog), ""));
-                            break;
-                        case 39:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "=="));
-                            break;
-                        case 40:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "!="));
-                            break;
-                        case 41:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "&&"));
-                            break;
-                        case 42:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "||"));
-                            break;
-                        case 43:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexprprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
-                            break;
-                        case 44:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "true"));
-                            break;
-                        case 45:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "false"));
-                            break;
-                        case 46:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relop), ""));
-                            break;
-                        case 47:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 48:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "<"));
-                            break;
-                        case 49:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "<="));
-                            break;
-                        case 50:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ">"));
-                            break;
-                        case 51:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ">="));
-                            break;
-                        case 52:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
-                            break;
-                        case 53:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
-                            stack.push(new Pair<>(currentNode, "+"));
-                            break;
-                        case 54:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
-                            stack.push(new Pair<>(currentNode, "-"));
-                            break;
-                        case 55:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 56:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            break;
-                        case 57:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "*"));
-                            break;
-                        case 58:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "/"));
-                            break;
-                        case 59:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "%"));
-                            break;
-                        case 60:
-                            stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
-                            break;
-                        case 61:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, ")"));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            break;
-                        case 62:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            break;
-                        case 63:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "num"));
-                            break;
-                        case 64:
-                            stack.pop();
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
-                            stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            break;
-                        case 65:
-                            stack.pop();
-                            stack.push(new Pair<>(currentNode, "\""));
-                            stack.push(new Pair<>(currentNode, "StringLit"));
-                            stack.push(new Pair<>(currentNode, "\""));
-                            break;
-                    }
-                    if (!stack.getFirst().getValue().equals(""))
-                        terminalAvailable = true;
-                }
-            }
-            if (tokenToString(token).equals(stack.getFirst().getValue())) { // ----------------------------------------- handles if it's a terminal
-                currentNode.addChild(new TreeNode(TreeNode.Label.terminal, token, currentNode));
-                stack.pop();
-            }
-
-        }
-
-
-        //Turn the List of Tokens into a ParseTree.
-        return tree;
+        return parseTable;
     }
 
+    private static String tokenToString(Token token) {
+        switch (token.getType()) {
+            case PLUS:
+                return "+";
+            case MINUS:
+                return "-";
+            case TIMES:
+                return "*";
+            case DIVIDE:
+                return "/";
+            case MOD:
+                return "%";
+            case ASSIGN:
+                return "=";
+            case EQUAL:
+                return "==";
+            case NEQUAL:
+                return "!=";
+            case LT:
+                return "<";
+            case LE:
+                return "<=";
+            case GT:
+                return ">";
+            case GE:
+                return ">=";
+            case LPAREN:
+                return "(";
+            case RPAREN:
+                return ")";
+            case LBRACE:
+                return "{";
+            case RBRACE:
+                return "}";
+            case AND:
+                return "&&";
+            case OR:
+                return "||";
+            case SEMICOLON:
+                return ";";
+            case PUBLIC:
+                return "public";
+            case CLASS:
+                return "class";
+            case STATIC:
+                return "static";
+            case VOID:
+                return "void";
+            case MAIN:
+                return "main";
+            case STRINGARR:
+                return "String[]";
+            case ARGS:
+                return "args";
+            case TYPE:
+                return "int";
+            case PRINT:
+                return "System.out.println";
+            case WHILE:
+                return "while";
+            case FOR:
+                return "for";
+            case IF:
+                return "if";
+            case ELSE:
+                return "else";
+            case DQUOTE:
+                return "\"";
+            case SQUOTE:
+                return "'";
+            case ID:
+                return "ID";
+            case NUM:
+                return "num";
+            case TRUE:
+                return "true";
+            case FALSE:
+                return "false";
+            case STRINGLIT:
+                return "Stringlit";
+        }
+        return "";
+    }
 }
