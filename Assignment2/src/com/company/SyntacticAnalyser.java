@@ -14,17 +14,17 @@ import java.util.Map;
 public class SyntacticAnalyser {
 
 
-
     public static TreeNode createNode(TreeNode parent, TreeNode.Label childLabel) {
         TreeNode newNode = new TreeNode(childLabel, parent);
         parent.addChild(newNode);
         return newNode;
     }
 
-    public static void createLeaf(TreeNode parent) {
-        parent.addChild(new TreeNode(TreeNode.Label.terminal, parent));
+    public static TreeNode createLeaf(TreeNode parent) {
+        TreeNode newNode = new TreeNode(TreeNode.Label.terminal, parent);
+        parent.addChild(newNode);
+        return newNode;
     }
-
 
 
     public static ParseTree parse(List<Token> tokens) throws SyntaxException {
@@ -45,9 +45,9 @@ public class SyntacticAnalyser {
                 boolean terminalAvailable = false;
                 while (!terminalAvailable) { // ---- makes sure that we don't go onto the next token until we process it as a terminal
 
-                    if (!stack.getFirst().getKey().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
+                    if (!stack.getFirst().getKey().getLabel().equals(currentNode)) { // --------------------------- handles if there's a variable change aka current != top of stack
 //                        TreeNode newNode = new TreeNode(stack.getFirst().getKey().getLabel(),currentNode);
-//                            currentNode.addChild(stack.getFirst().getKey());
+//                        currentNode.addChild(stack.getFirst().getKey());
                         stack.getFirst().getKey().setToken(token);
                         currentNode = stack.getFirst().getKey();
                     }
@@ -56,35 +56,21 @@ public class SyntacticAnalyser {
                     switch (ruleNum) {
                         case 1:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "args"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "String[]"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "main"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "void"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "static"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "public"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "class"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "args"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "String[]"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
+                            stack.push(new Pair<>(createLeaf(currentNode), "main"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "void"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "static"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "public"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "ID"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "class"));
                             // stack.push("public"); -- this gets popped right away
                             break;
                         case 2:
@@ -109,20 +95,17 @@ public class SyntacticAnalyser {
                             break;
                         case 7:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ";"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.assign), ""));
                             break;
                         case 8:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ";"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.decl), ""));
                             break;
                         case 9:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ";"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ";"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.print), ""));
                             break;
                         case 10:
@@ -131,41 +114,29 @@ public class SyntacticAnalyser {
                             break;
                         case 11:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "while"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
+                            stack.push(new Pair<>(createLeaf(currentNode), "while"));
                             break;
                         case 12:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forarith), ""));
-                            stack.push(new Pair<>(currentNode, ";"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ";"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, ";"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ";"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.forstart), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "if"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
+                            stack.push(new Pair<>(createLeaf(currentNode), "if"));
                             break;
                         case 13:
                             stack.pop();
@@ -190,102 +161,82 @@ public class SyntacticAnalyser {
                         case 18:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "if"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
+                            stack.push(new Pair<>(createLeaf(currentNode), "if"));
                             break;
                         case 19:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseifstat), ""));
-                            stack.push(new Pair<>(currentNode, "}"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "}"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.los), ""));
-                            stack.push(new Pair<>(currentNode, "{"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "{"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.elseorelseif), ""));
                             break;
                         case 20:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 21:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possif), ""));
-                            stack.push(new Pair<>(currentNode, "else"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "else"));
                             break;
                         case 22:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.boolexpr), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.relexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "if"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
+                            stack.push(new Pair<>(createLeaf(currentNode), "if"));
                             break;
                         case 23:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 24:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
-                            stack.push(new Pair<>(currentNode, "="));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "="));
+                            stack.push(new Pair<>(createLeaf(currentNode), "ID"));
                             break;
                         case 25:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.possassign), ""));
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "ID"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.type), ""));
                             break;
                         case 26:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.expr), ""));
-                            stack.push(new Pair<>(currentNode, "="));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "="));
                             break;
                         case 27:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 28:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "System.out.println"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "System.out.println"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.printexpr), ""));
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             break;
                         case 29:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "int"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "int"));
                             break;
                         case 30:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "char"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "char"));
                             break;
                         case 31:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "boolean"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "boolean"));
                             break;
                         case 32:
                             stack.pop();
@@ -298,12 +249,9 @@ public class SyntacticAnalyser {
                             break;
                         case 34:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "'"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "Char"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "'"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "'"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "Char"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "'"));
                             break;
                         case 35:
                             stack.pop();
@@ -313,7 +261,7 @@ public class SyntacticAnalyser {
                             break;
                         case 36:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 37:
                             stack.pop();
@@ -325,23 +273,19 @@ public class SyntacticAnalyser {
                             break;
                         case 39:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "=="));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "=="));
                             break;
                         case 40:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "!="));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "!="));
                             break;
                         case 41:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "&&"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "&&"));
                             break;
                         case 42:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "||"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "||"));
                             break;
                         case 43:
                             stack.pop();
@@ -350,13 +294,11 @@ public class SyntacticAnalyser {
                             break;
                         case 44:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "true"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "true"));
                             break;
                         case 45:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "false"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "false"));
                             break;
                         case 46:
                             stack.pop();
@@ -365,27 +307,23 @@ public class SyntacticAnalyser {
                             break;
                         case 47:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 48:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "<"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "<"));
                             break;
                         case 49:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "<="));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "<="));
                             break;
                         case 50:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ">"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ">"));
                             break;
                         case 51:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ">="));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ">="));
                             break;
                         case 52:
                             stack.pop();
@@ -396,19 +334,17 @@ public class SyntacticAnalyser {
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
-                            stack.push(new Pair<>(currentNode, "+"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "+"));
                             break;
                         case 54:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexprprime), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.term), ""));
-                            stack.push(new Pair<>(currentNode, "-"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "-"));
                             break;
                         case 55:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 56:
                             stack.pop();
@@ -419,44 +355,37 @@ public class SyntacticAnalyser {
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "*"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "*"));
                             break;
                         case 58:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "/"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "/"));
                             break;
                         case 59:
                             stack.pop();
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.termprime), ""));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.factor), ""));
-                            stack.push(new Pair<>(currentNode, "%"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "%"));
                             break;
                         case 60:
                             stack.pop();
-                            //stack.push(new Pair<>(currentNode, ""));
+                            //stack.push(new Pair<>(createLeaf(currentNode), ""));
                             break;
                         case 61:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, ")"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), ")"));
                             stack.push(new Pair<>(createNode(currentNode, TreeNode.Label.arithexpr), ""));
-                            stack.push(new Pair<>(currentNode, "("));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "("));
                             break;
                         case 62:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "ID"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "ID"));
                             break;
                         case 63:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "num"));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "num"));
                             break;
                         case 64:
                             stack.pop();
@@ -465,21 +394,19 @@ public class SyntacticAnalyser {
                             break;
                         case 65:
                             stack.pop();
-                            stack.push(new Pair<>(currentNode, "\""));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "StringLit"));
-                            createLeaf(currentNode);
-                            stack.push(new Pair<>(currentNode, "\""));
-                            createLeaf(currentNode);
+                            stack.push(new Pair<>(createLeaf(currentNode), "\""));
+                            stack.push(new Pair<>(createLeaf(currentNode), "StringLit"));
+                            stack.push(new Pair<>(createLeaf(currentNode), "\""));
                             break;
                     }
                     if (!stack.getFirst().getValue().equals(""))
                         terminalAvailable = true;
                 }
             }
-            if (tokenToString(token).equals(stack.getFirst().getValue())) { // ----------------------------------------- handles if it's a terminal
+            if (tokenToString(token).equals(stack.getFirst().getValue()) && stack.getFirst().getKey().getLabel().equals(TreeNode.Label.terminal)) { // ----------------------------------------- handles if it's a terminal
 //                currentNode.addChild(new TreeNode(TreeNode.Label.terminal, token, currentNode));
-//                stack.getFirst().getKey().setToken(token);
+//                currentNode.addChild(stack.getFirst().getKey());
+                stack.getFirst().getKey().setToken(token);
                 stack.pop();
             }
 
@@ -489,17 +416,6 @@ public class SyntacticAnalyser {
         //Turn the List of Tokens into a ParseTree.
         return tree;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static HashMap<TreeNode.Label, HashMap<String, Integer>> createTable() {
