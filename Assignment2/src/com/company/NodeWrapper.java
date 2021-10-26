@@ -15,12 +15,24 @@ public class NodeWrapper {
         this.value = value;
     }
 
+    public TreeNode getParent() {
+        return this.parent;
+    }
+
+    public TreeNode.Label getLabel() {
+        return this.label;
+    }
+
     public TreeNode getNode() {
         return this.node;
     }
 
     public void setNode(TreeNode node) {
         this.node = node;
+    }
+
+    public String getValue() {
+        return this.value;
     }
 
     public TreeNode createNode(Token token) {
