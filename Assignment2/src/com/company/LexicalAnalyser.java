@@ -11,10 +11,9 @@ public class LexicalAnalyser {
 
     public static List<Token> analyse(String sourceCode) throws LexicalException {
         // Turn the input String into a list of Tokens!
-        // split source code by spaces into a list and initialize all other necessary lists
         String[] splitList = sourceCode.split(" ");
-        List<String> tokenCase = Arrays.asList(new String[]{ // list to check characters against
-                "\"", "\'", "(", ")", "{", "}",
+        List<String> tokenCase = Arrays.asList(new String[]{
+                "\"", "'", "(", ")", "{", "}",
                 ";", "+", "-", "*", "/", "%"
         });
         List<String> furtherSplitList = new ArrayList<String>();
@@ -22,27 +21,28 @@ public class LexicalAnalyser {
 
         for (String word : splitList) {
             String s = "";
-            for (int i = 0; i < word.length(); i++) { // iterate through the word
+            for (int i = 0; i < word.length(); i++) {
                 // System.out.println(word.charAt(i));
                 String c = Character.toString(word.charAt(i));
-                if (tokenCase.contains(c)) { // check against list of tokens
-                    furtherSplitList.add(s); // add whatever we have in the list
-                    furtherSplitList.add(c); // add the last character as a separate token
+                if (tokenCase.contains(c)) {
+                    furtherSplitList.add(s);
+                    furtherSplitList.add(c);
                     s = "";
                 } else {
-                    s += c; // if character wasn't a separator keep adding to s
+                    s += c;
                 }
             }
             furtherSplitList.add(s);
         }
-        // start adding tokens to the token list based on what we have in further split list
+        // System.out.println(furtherSplitList);
         for (int i = 0; i < furtherSplitList.size(); i++) {
             String s = furtherSplitList.get(i);
             if (s.length() > 0) {
                 try {
+//                    System.out.println(s);
                     if (i > 0 && furtherSplitList.get(i - 1).matches("\"")) {
                         tokenList.add(tokenTypeStringLit(s).get());
-                    } else if (i > 0 && furtherSplitList.get(i - 1).matches("\'")) {
+                    } else if (i > 0 && furtherSplitList.get(i - 1).matches("'")) {
                         tokenList.add(tokenTypeCharLit(s).get());
                     } else if (i < furtherSplitList.size() - 1 && furtherSplitList.get(i).matches(".[=]$")) {
                         // System.out.println(furtherSplitList.get(i));
@@ -54,14 +54,12 @@ public class LexicalAnalyser {
                             tokenList.add(tokenTypeNE(s).get());
                         } else if (furtherSplitList.get(i).matches("^[=].*")) {
                             tokenList.add(tokenTypeEqual(s).get());
-                        } else {
-                            tokenList.add(tokenTypeEqual(s).get());
-                        }
-                    } else {
-                        tokenList.add(tokenFromString(s).get());
-                    }
+                        } else { tokenList.add(tokenTypeEqual(s).get()); }
+                    } else {tokenList.add(tokenFromString(s).get()); }
                 } catch (NoSuchElementException e) {
-                    System.out.print("Token not found: " + e + "\n");
+                    // tokenList.add(Optional.empty());
+                    // System.out.print("Token not found: " + e + "\n");
+                    throw new LexicalException("Token not found: " + e);
                 } catch (Exception e) {
                     System.out.print(e);
                 }
@@ -185,22 +183,17 @@ public class LexicalAnalyser {
                 return Optional.of(Token.TokenType.LT);
             case ">":
                 return Optional.of(Token.TokenType.GT);
-            // case "<=":
-            // return Optional.of(Token.TokenType.LE);
-            // case ">=":
-            // return Optional.of(Token.TokenType.GE);
+            case "\"":
+                return Optional.of(Token.TokenType.DQUOTE);
+            case "'":
+                return Optional.of(Token.TokenType.SQUOTE);
         }
 
-        if (t.matches("\"{1}"))
-            return Optional.of(Token.TokenType.DQUOTE);
-        if (t.matches("\'{1}"))
-            return Optional.of(Token.TokenType.SQUOTE);
         if (t.matches("\\d+"))
             return Optional.of(Token.TokenType.NUM);
         if (Character.isAlphabetic(t.charAt(0)) && t.matches("[\\d|\\w]+")) {
             return Optional.of(Token.TokenType.ID);
         }
-
         return Optional.empty();
     }
 
