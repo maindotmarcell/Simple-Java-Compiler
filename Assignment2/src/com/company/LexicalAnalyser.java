@@ -37,6 +37,7 @@ public class LexicalAnalyser {
             String s = furtherSplitList.get(i);
             if (s.length() > 0) {
                 try {
+                    System.out.println(s);
                     if (i > 0 && furtherSplitList.get(i - 1).matches("\"")) {
                         tokenList.add(tokenTypeStringLit(s).get());
                     } else if (i > 0 && furtherSplitList.get(i - 1).matches("'")) {
@@ -55,7 +56,8 @@ public class LexicalAnalyser {
                     } else {tokenList.add(tokenFromString(s).get()); }
                 } catch (NoSuchElementException e) {
                     // tokenList.add(Optional.empty());
-                    System.out.print("Token not found: " + e + "\n");
+                    // System.out.print("Token not found: " + e + "\n");
+                    throw new LexicalException("Token not found: " + e);
                 } catch (Exception e) {
                     System.out.print(e);
                 }
