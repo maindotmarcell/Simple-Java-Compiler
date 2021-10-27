@@ -1,9 +1,4 @@
 package com.company;
-
-import apple.laf.JRSUIUtils;
-import com.company.ParseTree;
-import javafx.util.Pair;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -135,7 +130,7 @@ public class SyntacticAnalyser {
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, ";"));
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.forstart, ""));
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "("));
-                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "if"));
+                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "for"));
                             break;
                         case 13:
                             stack.pop();
@@ -250,7 +245,7 @@ public class SyntacticAnalyser {
                         case 34:
                             stack.pop();
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "'"));
-                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "Char"));
+                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "CharLit"));
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "'"));
                             break;
                         case 35:
@@ -452,7 +447,7 @@ public class SyntacticAnalyser {
             put("while", 11);
         }});
         parseTable.put(TreeNode.Label.forstat, new HashMap<String, Integer>() {{
-            put("For", 12);
+            put("for", 12);
         }});
         parseTable.put(TreeNode.Label.forstart, new HashMap<String, Integer>() {{
             put("ID", 14);
@@ -718,6 +713,8 @@ public class SyntacticAnalyser {
                 return "false";
             case STRINGLIT:
                 return "StringLit";
+            case CHARLIT:
+                return "CharLit";
         }
         return "";
     }
