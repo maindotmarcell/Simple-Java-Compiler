@@ -16,6 +16,8 @@ public class SyntacticAnalyser {
 
     public static ParseTree parse(List<Token> tokens) throws SyntaxException {
 
+        if (tokens.size() == 0)
+            throw new SyntaxException("Syntactical exception.");
 
         HashMap<TreeNode.Label, HashMap<String, Integer>> parseTable = createTable();
         Deque<NodeWrapper> stack = new ArrayDeque<>();
@@ -43,7 +45,12 @@ public class SyntacticAnalyser {
                         stack.getFirst().createNode(token);
                         currentNode = stack.getFirst();
                     }
-                    int ruleNum = (int) parseTable.get(currentNode.getNode().getLabel()).get(tokenToString(token)); // ----------- checks if a rule goes with the variable
+                    int ruleNum = 0;
+                    try {
+                        ruleNum = (int) parseTable.get(currentNode.getNode().getLabel()).get(tokenToString(token)); // ----------- checks if a rule goes with the variable
+                    } catch (NullPointerException e) {
+                        throw new SyntaxException("Syntactical Exception.");
+                    }
                     switch (ruleNum) {
                         case 1:
                             stack.pop();
@@ -102,7 +109,7 @@ public class SyntacticAnalyser {
                             break;
                         case 10:
                             stack.pop();
-                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.epsilon, ""));
+                            stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, ";"));
                             break;
                         case 11:
                             stack.pop();
@@ -392,7 +399,7 @@ public class SyntacticAnalyser {
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "\""));
                             break;
                     }
-                } else if (stack.getFirst().getLabel().equals(TreeNode.Label.terminal) && stack.getFirst().getValue().equals(tokenToString(token)))   {
+                } else if (stack.getFirst().getLabel().equals(TreeNode.Label.terminal) && stack.getFirst().getValue().equals(tokenToString(token))) {
                     stack.getFirst().createNode(token);
                     stack.pop();
                     terminalAvailable = true;
