@@ -392,11 +392,12 @@ public class SyntacticAnalyser {
                             stack.push(new NodeWrapper(currentNode.getNode(), TreeNode.Label.terminal, "\""));
                             break;
                     }
-                }
-                if (stack.getFirst().getLabel().equals(TreeNode.Label.terminal) && stack.getFirst().getValue().equals(tokenToString(token)))   {
+                } else if (stack.getFirst().getLabel().equals(TreeNode.Label.terminal) && stack.getFirst().getValue().equals(tokenToString(token)))   {
                     stack.getFirst().createNode(token);
                     stack.pop();
                     terminalAvailable = true;
+                } else {
+                    throw new SyntaxException("Syntactical Exception.");
                 }
             }
 
